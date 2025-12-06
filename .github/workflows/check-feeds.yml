@@ -1,0 +1,41 @@
+name: Check RSS Feeds
+
+on:
+  schedule:
+    # Run every 5 minutes
+    # Note: GitHub Actions cron can be delayed by 10-15 minutes during high load
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+    # Allow manual triggering from Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  check-feeds:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Need to fetch with token that can push
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@v0.9.3
+        with:
+          cache: true
+
+      - name: Check RSS feeds
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+        run: pixi run python bot.py --once
+
+      - name: Commit state changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add rss_state.json
+          git diff --staged --quiet || git commit -m "Update RSS state [skip ci]"
+          git push
