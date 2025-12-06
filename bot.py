@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import discord
 import feedparser
@@ -11,6 +12,7 @@ load_dotenv()
 
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 STATE_FILE = "rss_state.json"
+RUN_ONCE = "--once" in sys.argv
 
 # -------------------------------------
 # CONFIG: RSS → Discord channel map
@@ -101,9 +103,13 @@ tree = bot.tree
 @bot.event
 async def on_ready():
     print(f"Bot logged in as {bot.user}")
-    await tree.sync()
-    print("Slash commands synced.")
-    rss_checker.start()
+    if RUN_ONCE:
+        await rss_checker()
+        await bot.close()
+    else:
+        await tree.sync()
+        print("Slash commands synced.")
+        rss_checker.start()
 
 
 # -------------------------------------
