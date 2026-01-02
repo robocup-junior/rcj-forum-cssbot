@@ -206,10 +206,24 @@ async def rss_checker():
 
         # Find new posts
         new_posts = []
+        found_last_seen = False
+        
         for entry in entries:
             if entry.id == last_seen:
+                found_last_seen = True
                 break
             new_posts.append(entry)
+
+        # If last_seen wasn't found, it was likely deleted
+        # Only post entries that are newer (have more recent timestamps)
+        if not found_last_seen and new_posts:
+            print(f"  Warning: last_seen post not found (may have been deleted)")
+            # Don't post anything if we can't verify they're actually new
+            # Just update to the latest and wait for next cycle
+            state[feed_url] = latest_id
+            save_state(state)
+            print(f"  Updated to latest ID without posting")
+            continue
 
         if not new_posts:
             continue
