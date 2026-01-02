@@ -14,6 +14,9 @@ DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 STATE_FILE = "rss_state.json"
 RUN_ONCE = "--once" in sys.argv
 
+# Safety cap: max posts per feed per cycle (prevents mass reposts if something goes wrong)
+MAX_POSTS_PER_CYCLE = 5
+
 # -------------------------------------
 # CONFIG: RSS → Discord channel map
 # -------------------------------------
@@ -55,7 +58,7 @@ def load_state():
 
 def save_state(state):
     with open(STATE_FILE, "w") as f:
-        json.dump(state, f)
+        json.dump(state, f, indent=2)
 
 state = load_state()
 
@@ -191,34 +194,38 @@ async def rss_checker():
         if not entries:
             continue
 
-        latest_id = entries[0].id
-        last_seen = state.get(feed_url)
+        # Get set of seen IDs for this feed
+        seen_ids = set(state.get(feed_url, []))
 
-        # First run → post most recent entry
-        if last_seen is None:
+        # First run → mark all current entries as seen, post only the latest
+        if not seen_ids:
             print("  First run: posting initial entry")
             channel = bot.get_channel(channel_id)
             if channel:
                 await post_entry(channel, entries[0], feed_url, prefix="Initial Post")
-            state[feed_url] = latest_id
+            state[feed_url] = [e.id for e in entries]
             save_state(state)
             continue
 
-        # Find new posts
-        new_posts = []
-        for entry in entries:
-            if entry.id == last_seen:
-                break
-            new_posts.append(entry)
+        # Find new posts (entries we haven't seen before)
+        new_posts = [e for e in entries if e.id not in seen_ids]
+
+        # Safety cap to prevent mass reposts
+        if len(new_posts) > MAX_POSTS_PER_CYCLE:
+            print(f"  WARNING: {len(new_posts)} new posts, capping at {MAX_POSTS_PER_CYCLE}")
+            new_posts = new_posts[:MAX_POSTS_PER_CYCLE]
+
+        # Update seen IDs: keep IDs still in feed + mark posted ones as seen
+        # (only mark posted items so backlog can catch up over subsequent cycles)
+        current_feed_ids = {e.id for e in entries}
+        posted_ids = {e.id for e in new_posts}
+        state[feed_url] = list((seen_ids & current_feed_ids) | posted_ids)
+        save_state(state)
 
         if not new_posts:
             continue
 
-        # Update last seen
-        state[feed_url] = latest_id
-        save_state(state)
-
-        # Post new items
+        # Post new items (oldest first)
         channel = bot.get_channel(channel_id)
         if channel is None:
             print(f"ERROR: Channel {channel_id} not found.")
