@@ -16,24 +16,30 @@ STATE_FILE = "rss_state.json"
 # CONFIG: RSS → Discord channel map
 # -------------------------------------
 FEEDS = {
-    "https://junior.forum.robocup.org/c/robocupjunior-rescue/6.rss": 1446890436240211988,
+    "https://junior.forum.robocup.org/c/robocupjunior-rescue/robocupjunior-rescue-line/10.rss": 1456660154169692162,
+    "https://junior.forum.robocup.org/c/robocupjunior-rescue/robocupjunior-rescue-maze/11.rss": 1456660460228051147,
+    "https://junior.forum.robocup.org/c/robocupjunior-rescue/rescue-simulation/47.rss": 1456660650356117635,
     "https://junior.forum.robocup.org/c/robocupjunior-soccer/5.rss": 1446903879345373254,
     "https://junior.forum.robocup.org/c/robocupjunior-onstage/7.rss": 1446903820805345471,
     "https://junior.forum.robocup.org/c/general/1.rss": 1446904054705029301,
 }
 
 CATEGORY_EMOJIS = {
-    "rescue": "🧭",
+    "rescue-line": "🟢",
+    "rescue-maze": "🔴",
+    "rescue-sim": "🟣",
     "soccer": "⚽",
     "onstage": "🎭",
     "general": "🌍",
 }
 
 CATEGORY_COLORS = {
-    "rescue": 0x2ECC71,   # green
-    "soccer": 0x3498DB,   # blue
-    "onstage": 0x9B59B6,  # purple
-    "general": 0x95A5A6,  # gray
+    "rescue-line": 0x2ECC71,   # green
+    "rescue-maze": 0xE74C3C,   # red
+    "rescue-sim": 0x9B59B6,    # purple
+    "soccer": 0x3498DB,        # blue
+    "onstage": 0xE91E63,       # pink
+    "general": 0x95A5A6,       # gray
 }
 
 # -------------------------------------
@@ -110,8 +116,12 @@ async def on_ready():
 # Determine category appearance
 # -------------------------------------
 def get_category_style(feed_url):
-    if "rescue" in feed_url:
-        return CATEGORY_EMOJIS["rescue"], CATEGORY_COLORS["rescue"]
+    if "rescue-line" in feed_url:
+        return CATEGORY_EMOJIS["rescue-line"], CATEGORY_COLORS["rescue-line"]
+    if "rescue-maze" in feed_url:
+        return CATEGORY_EMOJIS["rescue-maze"], CATEGORY_COLORS["rescue-maze"]
+    if "rescue-simulation" in feed_url:
+        return CATEGORY_EMOJIS["rescue-sim"], CATEGORY_COLORS["rescue-sim"]
     if "soccer" in feed_url:
         return CATEGORY_EMOJIS["soccer"], CATEGORY_COLORS["soccer"]
     if "onstage" in feed_url:
