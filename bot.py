@@ -30,16 +30,20 @@ FEEDS = {
     "https://junior.forum.robocup.org/c/general/1.rss": 1446904054705029301,
 }
 
-# Channel ID for each category (used when remapping misposted topics)
-CATEGORY_CHANNELS = {
-    "rescue-line": 1456660154169692162,
-    "rescue-maze": 1456660460228051147,
-    "rescue-sim":  1456660650356117635,
-    "rescue":      1466328513991933983,
-    "soccer":      1446903879345373254,
-    "onstage":     1446903820805345471,
-    "general":     1446904054705029301,
-}
+# Derived from FEEDS to avoid duplication — single source of truth for channel IDs
+def _build_category_channels(feeds):
+    result = {}
+    for url, channel_id in feeds.items():
+        if "rescue-line" in url:          result["rescue-line"] = channel_id
+        elif "rescue-maze" in url:        result["rescue-maze"] = channel_id
+        elif "rescue-simulation" in url:  result["rescue-sim"]  = channel_id
+        elif "robocupjunior-rescue" in url: result["rescue"]    = channel_id
+        elif "soccer" in url:             result["soccer"]      = channel_id
+        elif "onstage" in url:            result["onstage"]     = channel_id
+        else:                             result["general"]     = channel_id
+    return result
+
+CATEGORY_CHANNELS = _build_category_channels(FEEDS)
 
 # Keywords to detect if a post title clearly belongs to a specific category
 CATEGORY_KEYWORDS = {
@@ -169,38 +173,29 @@ def get_feed_category(feed_url):
 
 
 def remap_category(title, current_category):
-    """Return a different category key if the title clearly signals a mismatch, else current."""
+    """Return a different category key if the title unambiguously signals a mismatch, else current."""
     title_lower = title.lower()
-    for category, keywords in CATEGORY_KEYWORDS.items():
-        if category == current_category:
-            continue
-        if any(kw in title_lower for kw in keywords):
-            print(f"  Remapping '{title}' from '{current_category}' → '{category}'")
-            return category
+    matches = [
+        cat for cat, keywords in CATEGORY_KEYWORDS.items()
+        if cat != current_category and any(kw in title_lower for kw in keywords)
+    ]
+    if len(matches) == 1:
+        print(f"  Remapping '{title}' from '{current_category}' → '{matches[0]}'")
+        return matches[0]
+    if len(matches) > 1:
+        print(f"  Ambiguous match for '{title}' ({matches}), keeping '{current_category}'")
     return current_category
 
 
-def get_category_style(feed_url):
-    if "rescue-line" in feed_url:
-        return CATEGORY_EMOJIS["rescue-line"], CATEGORY_COLORS["rescue-line"]
-    if "rescue-maze" in feed_url:
-        return CATEGORY_EMOJIS["rescue-maze"], CATEGORY_COLORS["rescue-maze"]
-    if "rescue-simulation" in feed_url:
-        return CATEGORY_EMOJIS["rescue-sim"], CATEGORY_COLORS["rescue-sim"]
-    if "robocupjunior-rescue" in feed_url:
-        return CATEGORY_EMOJIS["rescue"], CATEGORY_COLORS["rescue"]
-    if "soccer" in feed_url:
-        return CATEGORY_EMOJIS["soccer"], CATEGORY_COLORS["soccer"]
-    if "onstage" in feed_url:
-        return CATEGORY_EMOJIS["onstage"], CATEGORY_COLORS["onstage"]
-    return CATEGORY_EMOJIS["general"], CATEGORY_COLORS["general"]
+def get_category_style(category):
+    return CATEGORY_EMOJIS[category], CATEGORY_COLORS[category]
 
 
 # -------------------------------------
 # Helper: Post entry
 # -------------------------------------
-async def post_entry(channel, entry, feed_url, prefix="New Post"):
-    emoji, color = get_category_style(feed_url)
+async def post_entry(channel, entry, category, prefix="New Post"):
+    emoji, color = get_category_style(category)
 
     raw_html = entry.get("summary", "")
     clean_text = clean_html(raw_html)
@@ -232,7 +227,7 @@ async def forcepost(interaction: discord.Interaction):
             continue
 
         for entry in reversed(entries):
-            await post_entry(channel, entry, feed_url, prefix="Forced Post")
+            await post_entry(channel, entry, get_feed_category(feed_url), prefix="Forced Post")
 
     print("Forcepost complete.")
 
@@ -260,7 +255,7 @@ async def rss_checker():
             print("  First run: posting initial entry")
             channel = bot.get_channel(channel_id)
             if channel:
-                await post_entry(channel, entries[0], feed_url, prefix="Initial Post")
+                await post_entry(channel, entries[0], get_feed_category(feed_url), prefix="Initial Post")
             state[feed_url] = sorted(e.id for e in entries)
             save_state(state)
             continue
@@ -295,7 +290,7 @@ async def rss_checker():
             if target_channel is None:
                 print(f"ERROR: Channel {channel_id} not found.")
                 continue
-            await post_entry(target_channel, entry, feed_url)
+            await post_entry(target_channel, entry, target_category)
 
 # -------------------------------------
 # Run bot
