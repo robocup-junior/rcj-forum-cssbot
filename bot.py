@@ -4,7 +4,6 @@ import json
 import discord
 import feedparser
 from discord.ext import tasks, commands
-from discord import app_commands
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 
@@ -270,14 +269,13 @@ async def rss_checker():
             print(f"  WARNING: {len(new_posts)} new posts, capping at {MAX_POSTS_PER_CYCLE}")
             new_posts = new_posts[:MAX_POSTS_PER_CYCLE]
 
-        # Update seen IDs: keep IDs still in feed + mark posted ones as seen
-        # (only mark posted items so backlog can catch up over subsequent cycles)
+        # Prune stale IDs (no longer in the feed) from per-feed state
         current_feed_ids = {e.id for e in entries}
         posted_ids = {e.id for e in new_posts}
         state[feed_url] = sorted((seen_ids & current_feed_ids) | posted_ids)
-        save_state(state)
 
         if not new_posts:
+            save_state(state)
             continue
 
         # Post new items (oldest first), remapping to correct channel if needed
@@ -293,6 +291,8 @@ async def rss_checker():
                 print(f"ERROR: Channel {channel_id} not found.")
                 continue
             await post_entry(target_channel, entry, target_category)
+
+        save_state(state)
 
 # -------------------------------------
 # Run bot
