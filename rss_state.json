@@ -81,6 +81,7 @@
     "junior.forum.robocup.org-topic-5195"
   ],
   "https://junior.forum.robocup.org/c/robocupjunior-soccer/5.rss": [
+    "junior.forum.robocup.org-topic-4571",
     "junior.forum.robocup.org-topic-4618",
     "junior.forum.robocup.org-topic-4622",
     "junior.forum.robocup.org-topic-4636",
@@ -104,8 +105,7 @@
     "junior.forum.robocup.org-topic-4886",
     "junior.forum.robocup.org-topic-4982",
     "junior.forum.robocup.org-topic-5176",
-    "junior.forum.robocup.org-topic-5185",
-    "junior.forum.robocup.org-topic-5209"
+    "junior.forum.robocup.org-topic-5185"
   ],
   "https://junior.forum.robocup.org/c/robocupjunior-onstage/7.rss": [
     "junior.forum.robocup.org-topic-3731",
@@ -135,7 +135,6 @@
     "junior.forum.robocup.org-topic-5110"
   ],
   "https://junior.forum.robocup.org/c/general/1.rss": [
-    "junior.forum.robocup.org-topic-3650",
     "junior.forum.robocup.org-topic-3658",
     "junior.forum.robocup.org-topic-3681",
     "junior.forum.robocup.org-topic-3694",
@@ -159,7 +158,8 @@
     "junior.forum.robocup.org-topic-4701",
     "junior.forum.robocup.org-topic-4762",
     "junior.forum.robocup.org-topic-5069",
-    "junior.forum.robocup.org-topic-5196"
+    "junior.forum.robocup.org-topic-5196",
+    "junior.forum.robocup.org-topic-5209"
   ],
   "https://junior.forum.robocup.org/c/robocupjunior-rescue/6.rss": [
     "junior.forum.robocup.org-topic-5006",
