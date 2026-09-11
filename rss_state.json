@@ -1,6 +1,5 @@
 {
   "https://junior.forum.robocup.org/c/robocupjunior-rescue/robocupjunior-rescue-line/10.rss": [
-    "junior.forum.robocup.org-topic-4600",
     "junior.forum.robocup.org-topic-4631",
     "junior.forum.robocup.org-topic-4645",
     "junior.forum.robocup.org-topic-4675",
@@ -24,10 +23,10 @@
     "junior.forum.robocup.org-topic-5325",
     "junior.forum.robocup.org-topic-5326",
     "junior.forum.robocup.org-topic-5405",
-    "junior.forum.robocup.org-topic-5492"
+    "junior.forum.robocup.org-topic-5492",
+    "junior.forum.robocup.org-topic-5513"
   ],
   "https://junior.forum.robocup.org/c/robocupjunior-rescue/robocupjunior-rescue-maze/11.rss": [
-    "junior.forum.robocup.org-topic-4648",
     "junior.forum.robocup.org-topic-4649",
     "junior.forum.robocup.org-topic-4657",
     "junior.forum.robocup.org-topic-4668",
@@ -51,10 +50,10 @@
     "junior.forum.robocup.org-topic-5384",
     "junior.forum.robocup.org-topic-5395",
     "junior.forum.robocup.org-topic-5441",
-    "junior.forum.robocup.org-topic-5455"
+    "junior.forum.robocup.org-topic-5455",
+    "junior.forum.robocup.org-topic-5514"
   ],
   "https://junior.forum.robocup.org/c/robocupjunior-rescue/rescue-simulation/47.rss": [
-    "junior.forum.robocup.org-topic-3879",
     "junior.forum.robocup.org-topic-3883",
     "junior.forum.robocup.org-topic-3897",
     "junior.forum.robocup.org-topic-3914",
@@ -78,7 +77,8 @@
     "junior.forum.robocup.org-topic-5350",
     "junior.forum.robocup.org-topic-5414",
     "junior.forum.robocup.org-topic-5438",
-    "junior.forum.robocup.org-topic-5465"
+    "junior.forum.robocup.org-topic-5465",
+    "junior.forum.robocup.org-topic-5515"
   ],
   "https://junior.forum.robocup.org/c/robocupjunior-soccer/5.rss": [
     "junior.forum.robocup.org-topic-4755",
@@ -162,8 +162,6 @@
     "junior.forum.robocup.org-topic-5362"
   ],
   "https://junior.forum.robocup.org/c/robocupjunior-rescue/6.rss": [
-    "junior.forum.robocup.org-topic-5277",
-    "junior.forum.robocup.org-topic-5298",
     "junior.forum.robocup.org-topic-5304",
     "junior.forum.robocup.org-topic-5307",
     "junior.forum.robocup.org-topic-5318",
